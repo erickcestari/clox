@@ -13,7 +13,6 @@ typedef struct
   Value *stack;
   int stackCount;
   int stackCapacity;
-  Value *stackTop;
 } VM;
 
 typedef enum
