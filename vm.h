@@ -2,22 +2,22 @@
 #define clox_vm_h
 
 #include "chunk.h"
+#include "table.h"
 #include "value.h"
 
 #define STACK_MAX 256
 
-typedef struct
-{
+typedef struct {
   Chunk *chunk;
   uint8_t *ip;
   Value *stack;
   int stackCount;
   int stackCapacity;
+  Table strings;
   Obj *objects;
 } VM;
 
-typedef enum
-{
+typedef enum {
   INTERPRET_OK,
   INTERPRET_COMPILE_ERROR,
   INTERPRET_RUNTIME_ERROR
