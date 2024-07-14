@@ -1,11 +1,10 @@
 #ifndef clox_chunk_h
 #define clox_chunk_h
 
-#include "value.h"
 #include "common.h"
+#include "value.h"
 
-typedef enum
-{
+typedef enum {
   OP_ADD,
   OP_SUBTRACT,
   OP_MULTIPLY,
@@ -17,6 +16,8 @@ typedef enum
   OP_TRUE,
   OP_FALSE,
   OP_POP,
+  OP_GET_LOCAL,
+  OP_SET_LOCAL,
   OP_GET_GLOBAL,
   OP_DEFINE_GLOBAL,
   OP_SET_GLOBAL,
@@ -27,8 +28,7 @@ typedef enum
   OP_RETURN,
 } OpCode;
 
-typedef struct
-{
+typedef struct {
   int count;
   int capacity;
   uint8_t *code;
