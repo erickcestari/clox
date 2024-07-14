@@ -1,0 +1,9 @@
+{
+  var a = "123";
+  {
+    var a = "456";
+    print a;
+  }
+
+  print a;
+}

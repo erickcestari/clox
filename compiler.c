@@ -196,7 +196,6 @@ static void addLocal(Token name) {
   Local *local = &current->locals[current->localCount++];
   local->name = name;
   local->depth = -1;
-  local->depth = current->scopeDepth;
 }
 static void declareVariable() {
   if (current->scopeDepth == 0)
@@ -304,7 +303,7 @@ static void namedVariable(Token name, bool canAssign) {
     expression();
     emitBytes(setOp, (uint8_t)arg);
   } else {
-    emitBytes(setOp, (uint8_t)arg);
+    emitBytes(getOp, (uint8_t)arg);
   }
 }
 

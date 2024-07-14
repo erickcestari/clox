@@ -123,6 +123,11 @@ static InterpretResult run() {
     case OP_FALSE:
       push(BOOL_VAL(false));
       break;
+    case OP_SET_LOCAL: {
+      uint8_t slot = READ_BYTE();
+      vm.stack[slot] = peek(0);
+      break;
+    }
     case OP_GET_GLOBAL: {
       ObjString *name = READ_STRING();
       Value value;
@@ -147,11 +152,7 @@ static InterpretResult run() {
       pop();
       break;
     }
-    case OP_SET_LOCAL: {
-      uint8_t slot = READ_BYTE();
-      vm.stack[slot] = peek(0);
-      break;
-    }
+
     case OP_SET_GLOBAL: {
       ObjString *name = READ_STRING();
       if (tableSet(&vm.globals, name, peek(0))) {
