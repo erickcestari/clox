@@ -187,7 +187,6 @@ static int resolveLocal(Compiler *compiler, Token *name) {
 
   return -1;
 }
-
 static void addLocal(Token name) {
   if (current->localCount == UINT8_COUNT) {
     error("Too many local variables in function.");
@@ -199,7 +198,6 @@ static void addLocal(Token name) {
   local->depth = -1;
   local->depth = current->scopeDepth;
 }
-
 static void declareVariable() {
   if (current->scopeDepth == 0)
     return;
@@ -397,6 +395,16 @@ static void parsePrecedence(Precedence precedence) {
   }
 }
 
+static uint8_t parseVariable(const char *errorMessage) {
+  consume(TOKEN_IDENTIFIER, errorMessage);
+
+  declareVariable();
+  if (current->scopeDepth > 0)
+    return 0;
+
+  return identifierConstant(&parser.previous);
+}
+
 static void markInitialized() {
   current->locals[current->localCount - 1].depth = current->scopeDepth;
 }
@@ -407,16 +415,6 @@ static void defineVariable(uint8_t global) {
     return;
   }
   emitBytes(OP_DEFINE_GLOBAL, global);
-}
-
-static uint8_t parseVariable(const char *errorMessage) {
-  consume(TOKEN_IDENTIFIER, errorMessage);
-
-  declareVariable();
-  if (current->scopeDepth > 0)
-    return 0;
-
-  return identifierConstant(&parser.previous);
 }
 
 static ParseRule *getRule(TokenType type) { return &rules[type]; }
