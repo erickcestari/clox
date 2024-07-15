@@ -5,3 +5,22 @@ if (isEqual) {
 } else {
   print "is not equal";
 }
+
+var truth = true;
+var falsey = false;
+
+if (truth and truth) {
+  print "truth and truth";
+}
+
+if (falsey or truth) {
+  print "falsey or truth";
+}
+
+if (falsey or falsey) {
+  print "unreachable";
+}
+
+if (falsey and truth) {
+  print "unreachable";
+}
