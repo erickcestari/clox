@@ -4,7 +4,8 @@
 #include "common.h"
 #include "value.h"
 
-typedef enum {
+typedef enum
+{
   OP_ADD,
   OP_SUBTRACT,
   OP_MULTIPLY,
@@ -21,6 +22,7 @@ typedef enum {
   OP_GET_GLOBAL,
   OP_DEFINE_GLOBAL,
   OP_SET_GLOBAL,
+  OP_JUMP_IF_FALSE,
   OP_EQUAL,
   OP_GREATER,
   OP_LESS,
@@ -28,7 +30,8 @@ typedef enum {
   OP_RETURN,
 } OpCode;
 
-typedef struct {
+typedef struct
+{
   int count;
   int capacity;
   uint8_t *code;

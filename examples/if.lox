@@ -1,0 +1,9 @@
+var isEqual = 1 != 1;
+
+if (isEqual) {
+  print "is equal";
+}
+
+if (!isEqual) {
+  print "is not equal";
+}
