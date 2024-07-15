@@ -1,1 +1,1 @@
-[program](assets/program.png)
+![Program](assets/program.png)
