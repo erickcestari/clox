@@ -780,3 +780,4 @@ ObjFunction *compile(const char *source)
     ObjFunction *function = endCompiler();
     return parser.hadError ? NULL : function;
   }
+}
