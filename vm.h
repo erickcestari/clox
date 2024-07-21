@@ -8,27 +8,23 @@
 #define STACK_MAX 256
 #define FRAMES_MAX 64
 
-typedef struct
-{
+typedef struct {
   ObjFunction *function;
   uint8_t *ip;
   Value *slots;
 } CallFrame;
 
-typedef struct
-{
+typedef struct {
   CallFrame frames[FRAMES_MAX];
   int frameCount;
-  Value *stack;
-  int stackCount;
-  int stackCapacity;
+  Value stack[STACK_MAX];
+  Value *stackTop;
   Table globals;
   Table strings;
   Obj *objects;
 } VM;
 
-typedef enum
-{
+typedef enum {
   INTERPRET_OK,
   INTERPRET_COMPILE_ERROR,
   INTERPRET_RUNTIME_ERROR

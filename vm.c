@@ -18,7 +18,7 @@ static Value clockNative(int argCount, Value *args) {
 }
 
 static void resetStack() {
-  vm.stackCount = 0;
+  vm.stackTop = vm.stack;
   vm.frameCount = 0;
 }
 
@@ -52,12 +52,10 @@ static void defineNative(const char *name, NativeFn function) {
 }
 
 void initVM() {
-  vm.stack = NULL;
-  vm.stackCapacity = 0;
+  resetStack();
   vm.objects = NULL;
   initTable(&vm.strings);
   initTable(&vm.globals);
-  resetStack();
   defineNative("clock", clockNative);
 }
 
@@ -68,24 +66,16 @@ void freeVM() {
 }
 
 void push(Value value) {
-  if (vm.stackCapacity < vm.stackCount + 1) {
-    int oldCapacity = vm.stackCapacity;
-    vm.stackCapacity = GROW_CAPACITY(oldCapacity);
-    vm.stack = GROW_ARRAY(Value, vm.stack, oldCapacity, vm.stackCapacity);
-  }
-
-  vm.stack[vm.stackCount] = value;
-  vm.stackCount++;
+  *vm.stackTop = value;
+  vm.stackTop++;
 }
 
 Value pop() {
-  vm.stackCount--;
-  return vm.stack[vm.stackCount];
+  vm.stackTop--;
+  return *vm.stackTop;
 }
 
-static Value peek(int distance) {
-  return vm.stack[vm.stackCount - 1 - distance];
-}
+static Value peek(int distance) { return vm.stackTop[-1 - distance]; }
 
 static bool call(ObjFunction *function, int argCount) {
   if (argCount != function->arity) {
@@ -102,7 +92,7 @@ static bool call(ObjFunction *function, int argCount) {
   CallFrame *frame = &vm.frames[vm.frameCount++];
   frame->function = function;
   frame->ip = function->chunk.code;
-  frame->slots = vm.stack + vm.stackCount - argCount - 1;
+  frame->slots = vm.stackTop - argCount - 1;
   return true;
 }
 
@@ -114,7 +104,7 @@ static bool callValue(Value callee, int argCount) {
     case OBJ_NATIVE: {
       NativeFn native = AS_NATIVE(callee);
       Value result = native(argCount, vm.stack - argCount);
-      vm.stack -= argCount + 1;
+      vm.stackTop -= argCount + 1;
       push(result);
       return true;
     }
@@ -168,7 +158,7 @@ static InterpretResult run() {
   for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
     printf("          ");
-    for (Value *slot = vm.stack; slot < vm.stack + vm.stackCount; slot++) {
+    for (Value *slot = vm.stackTop; slot < vm.stack; slot++) {
       printf("[ ");
       printValue(*slot);
       printf(" ]");
@@ -253,7 +243,9 @@ static InterpretResult run() {
         double a = AS_NUMBER(pop());
         push(NUMBER_VAL(a + b));
       } else {
-        runtimeError("Operands must be two numbers or two strings.");
+        Value b = pop();
+        Value a = pop();
+        runtimeError("Operands must be numbers. Types: %d, %d", a.type, b.type);
         return INTERPRET_RUNTIME_ERROR;
       }
       break;
@@ -315,7 +307,7 @@ static InterpretResult run() {
         return INTERPRET_OK;
       }
 
-      vm.stack = frame->slots;
+      vm.stackTop = frame->slots;
       push(result);
       frame = &vm.frames[vm.frameCount - 1];
       break;
